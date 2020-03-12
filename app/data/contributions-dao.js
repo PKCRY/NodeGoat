@@ -1,3 +1,4 @@
+
 var UserDAO = require("./user-dao").UserDAO;
 
 /* The ContributionsDAO must be constructed with a connected database object */
