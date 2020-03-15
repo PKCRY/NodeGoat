@@ -4,7 +4,7 @@ var express = require("express");
 var favicon = require("serve-favicon");
 var bodyParser = require("body-parser");
 var session = require("express-session");
-// var csrf = require('csurf');
+var csrf = require('csurf');
 var consolidate = require("consolidate"); // Templating library adapter for Express
 var swig = require("swig");
 var helmet = require("helmet");
@@ -12,7 +12,7 @@ var MongoClient = require("mongodb").MongoClient; // Driver for connecting to Mo
 var http = require("http");
 var marked = require("marked");
 //var helmet = require("helmet");
-//var nosniff = require('dont-sniff-mimetype');
+var nosniff = require('dont-sniff-mimetype');
 var app = express(); // Web framework to handle routing requests
 var routes = require("./app/routes");
 var config = require("./config/config"); // Application config properties
@@ -44,13 +44,13 @@ MongoClient.connect(config.db, function(err, db) {
     app.disable("x-powered-by");
 
     // Prevent opening page in frame or iframe to protect from clickjacking
-    app.use(helmet.xframe());
+    app.use(helmet.frameguard());
 
     // Prevents browser from caching and storing page
     app.use(helmet.noCache());
 
     // Allow loading resources only from white-listed domains
-    app.use(helmet.csp());
+    app.use(helmet.contentSecurityPolicy());
 
     // Allow communication only on HTTPS
     app.use(helmet.hsts());
@@ -103,7 +103,7 @@ MongoClient.connect(config.db, function(err, db) {
 
     }));
 
-    /*
+    
     // Fix for A8 - CSRF
     // Enable Express csrf protection
     app.use(csrf());
@@ -112,7 +112,7 @@ MongoClient.connect(config.db, function(err, db) {
         res.locals.csrftoken = req.csrfToken();
         next();
     });
-    */
+    
 
     // Register templating engine
     app.engine(".html", consolidate.swig);
